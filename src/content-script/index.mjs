@@ -1,6 +1,6 @@
 import Browser from 'webextension-polyfill'
 
-const PREFIX = 'CHATGPT:\n\n'
+const PREFIX = 'CHATGPT:'
 const port = Browser.runtime.connect()
 
 port.onMessage.addListener((msg) => {
@@ -37,7 +37,7 @@ function sendMsg(text) {
   const $textArea = document.querySelector('.chat-panel__input-container')
   const $sendBtn = document.querySelector('.chat-send__button')
   if (!$textArea || !$sendBtn) return
-  $textArea.value = PREFIX + text
+  $textArea.value = PREFIX + "\n" + text
   $textArea.dispatchEvent(
     new Event('input', {
       bubbles: true,

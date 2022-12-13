@@ -1,6 +1,6 @@
-# ChatGPT WechatBot
+# ChatGPT For Wechat FileHelper
 
-A browser extension to turn wechat filehelper to chatgpt robot, supports Chrome/Edge/Firefox
+A browser extension to turn wechat filehelper into a chatgpt-powered chatbot, supports Chrome/Edge/Firefox
 
 ## Installation
 

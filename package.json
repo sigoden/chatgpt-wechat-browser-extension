@@ -1,5 +1,5 @@
 {
-  "name": "chatgpt-wechatbot-chrome-extension",
+  "name": "chatgpt-for-wechat-filehelper",
   "private": true,
   "scripts": {
     "build": "node build.mjs"
