@@ -2,7 +2,8 @@
   "name": "chatgpt-for-wechat-filehelper",
   "private": true,
   "scripts": {
-    "build": "node build.mjs"
+    "build": "node build.mjs",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "eventsource-parser": "^0.0.5",

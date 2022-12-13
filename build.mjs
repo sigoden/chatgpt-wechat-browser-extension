@@ -9,14 +9,15 @@ async function deleteOldDir() {
 }
 
 async function runEsbuild() {
+  let nodeEnv = process.env.NODE_ENV || 'production'
   await esbuild.build({
     entryPoints: ['src/content-script/index.mjs', 'src/background/index.mjs'],
     bundle: true,
     outdir: outdir,
     treeShaking: true,
-    minify: true,
+    minify: nodeEnv === 'production',
     define: {
-      'process.env.NODE_ENV': '"production"',
+      'process.env.NODE_ENV': `"${nodeEnv}"`,
     },
   })
 }
