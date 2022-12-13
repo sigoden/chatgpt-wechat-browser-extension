@@ -22,5 +22,5 @@ jobs:
           repo_token: '${{ secrets.GITHUB_TOKEN }}'
           prerelease: true
           files: |
-            chromium.zip
-            firefox.zip
+            build/chromium.zip
+            build/firefox.zip
