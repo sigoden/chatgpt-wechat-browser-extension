@@ -19,7 +19,9 @@ async function getAccessToken() {
     .catch(() => ({}))
   if (!resp.accessToken) {
     openOrReloadChatgptTab()
-    throw new Error('UNAUTHORIZED, try again later')
+    throw new Error(
+      'UNAUTHORIZED. The extension will open the chatgpt page in a new tab to refresh the login information, please try again later',
+    )
   }
   cache.set(KEY_ACCESS_TOKEN, resp.accessToken)
   return resp.accessToken
@@ -91,7 +93,7 @@ async function generateAnswers(port, question) {
 
 async function openOrReloadChatgptTab() {
   const url = 'https://chat.openai.com/chat'
-  const tabs = await chrome.tabs.query({ url })
+  const tabs = await Browser.tabs.query({ url })
   if (tabs.length === 0) {
     await Browser.tabs.create({ url })
   } else {

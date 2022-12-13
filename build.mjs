@@ -9,7 +9,7 @@ async function deleteOldDir() {
 }
 
 async function runEsbuild() {
-  let nodeEnv = process.env.NODE_ENV || 'production'
+  let nodeEnv = process.env.NODE_ENV || 'production' // eslint-disable-line
   await esbuild.build({
     entryPoints: ['src/content-script/index.mjs', 'src/background/index.mjs'],
     bundle: true,
