@@ -9,6 +9,7 @@ const cache = new ExpiryMap(10 * 1000)
 
 let conversationId = undefined
 let parentMessageId = undefined
+let tabId = undefined;
 
 async function getAccessToken() {
   if (cache.get(KEY_ACCESS_TOKEN)) {
@@ -18,7 +19,8 @@ async function getAccessToken() {
     .then((r) => r.json())
     .catch(() => ({}))
   if (!resp.accessToken) {
-    throw new Error('UNAUTHORIZED')
+    openOrReloadChatgptTab()
+    throw new Error('UNAUTHORIZED, try again later')
   }
   cache.set(KEY_ACCESS_TOKEN, resp.accessToken)
   return resp.accessToken
@@ -81,6 +83,16 @@ async function generateAnswers(port, question) {
       }
     },
   })
+}
+
+async function openOrReloadChatgptTab() {
+  const url = "https://chat.openai.com/chat"
+  if (!tabId) {
+    const tab = await Browser.tabs.create({ url })
+    tabId = tab.id
+  } else {
+    await Browser.tabs.reload(tabId);
+  }
 }
 
 Browser.runtime.onConnect.addListener((port) => {
