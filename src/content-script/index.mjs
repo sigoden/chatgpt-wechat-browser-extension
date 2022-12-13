@@ -11,7 +11,7 @@ function connect() {
     if (msg.answer) {
       sendMsg(msg.answer)
     } else {
-      sendMsg(msg.error || 'Ops! something wrong.')
+      sendMsg(msg.error || '😟 Ops! something wrong.')
     }
   })
 }

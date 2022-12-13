@@ -1,6 +1,6 @@
 {
   "name": "ChatGPT For Wechat FileHelper",
-  "description": "Turn wechat filehelper into a chatgpt-powered chatbot",
+  "description": "Turn wechat filehelper into a chatgpt-powered chatbot.",
   "version": "0.1.0",
   "manifest_version": 2,
   "icons": {
@@ -13,7 +13,7 @@
     "tabs",
     "https://*.openai.com/",
     "https://filehelper.weixin.qq.com/",
-    "https://filehelper.weixin.qq.com/"
+    "https://szfilehelper.weixin.qq.com/"
   ],
   "background": {
     "scripts": ["background.js"]

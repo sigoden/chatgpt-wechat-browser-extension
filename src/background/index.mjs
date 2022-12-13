@@ -1,7 +1,7 @@
 import ExpiryMap from 'expiry-map'
 import { v4 as uuidv4 } from 'uuid'
+import { createParser } from 'eventsource-parser'
 import Browser from 'webextension-polyfill'
-import { fetchSSE } from './fetch-sse.mjs'
 
 const KEY_ACCESS_TOKEN = 'accessToken'
 
@@ -20,7 +20,7 @@ async function getAccessToken() {
   if (!resp.accessToken) {
     openOrReloadChatgptTab()
     throw new Error(
-      'UNAUTHORIZED. The extension will open the chatgpt page in a new tab to refresh the login information, please try again later',
+      '😟 UNAUTHORIZED. The extension will open the https://chat.openai.com/chat in a new tab to refresh the login information, please try again later',
     )
   }
   cache.set(KEY_ACCESS_TOKEN, resp.accessToken)
@@ -85,10 +85,47 @@ async function generateAnswers(port, question) {
     },
   }).catch((err) => {
     if (response) {
-      throw new Error(response + '...\n' + err.message)
+      throw new Error(response + '...' + err.message)
     }
     throw err
   })
+}
+
+export async function fetchSSE(resource, options) {
+  const { onMessage, ...fetchOptions } = options
+  const resp = await fetch(resource, fetchOptions)
+  if (!resp.ok) {
+    if (resp.status === 429) {
+      conversationId = undefined
+      parentMessageId = undefined
+      throw new Error(`😟 Too many requests, please slow down.`)
+    }
+    throw new Error(`😟 Network error.`)
+  }
+  const parser = createParser((event) => {
+    if (event.type === 'event') {
+      onMessage(event.data)
+    }
+  })
+  for await (const chunk of streamAsyncIterable(resp.body)) {
+    const str = new TextDecoder().decode(chunk)
+    parser.feed(str)
+  }
+}
+
+export async function* streamAsyncIterable(stream) {
+  const reader = stream.getReader()
+  try {
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) {
+        return
+      }
+      yield value
+    }
+  } finally {
+    reader.releaseLock()
+  }
 }
 
 async function openOrReloadChatgptTab() {
