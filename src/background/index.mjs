@@ -18,9 +18,8 @@ async function getAccessToken() {
     .then((r) => r.json())
     .catch(() => ({}))
   if (!resp.accessToken) {
-    openOrReloadChatgptTab()
     throw new Error(
-      '😟 UNAUTHORIZED. The extension will open the https://chat.openai.com/chat in a new tab to refresh the login information, please try again later',
+      '😟 UNAUTHORIZED.',
     )
   }
   cache.set(KEY_ACCESS_TOKEN, resp.accessToken)
@@ -98,7 +97,7 @@ export async function fetchSSE(resource, options) {
     if (resp.status === 429) {
       conversationId = undefined
       parentMessageId = undefined
-      throw new Error(`😟 Too many requests, please slow down.`)
+      throw new Error(`😟 Too many requests, try again later.`)
     }
     throw new Error(`😟 Network error.`)
   }
@@ -128,23 +127,13 @@ export async function* streamAsyncIterable(stream) {
   }
 }
 
-async function openOrReloadChatgptTab() {
-  const url = 'https://chat.openai.com/chat'
-  const tabs = await Browser.tabs.query({ url })
-  if (tabs.length === 0) {
-    await Browser.tabs.create({ url })
-  } else {
-    await Browser.tabs.reload(tabs[tabs.length - 1].id)
-  }
-}
-
 Browser.runtime.onConnect.addListener((port) => {
   port.onMessage.addListener(async (msg) => {
     console.debug('received msg', msg)
     try {
       await generateAnswers(port, msg.question)
     } catch (err) {
-      console.error(err)
+      console.log(err)
       port.postMessage({ error: err.message })
       cache.delete(KEY_ACCESS_TOKEN)
     }

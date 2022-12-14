@@ -10,7 +10,6 @@
     "128": "logo.png"
   },
   "permissions": [
-    "tabs",
     "https://*.openai.com/",
     "https://filehelper.weixin.qq.com/",
     "https://szfilehelper.weixin.qq.com/"
