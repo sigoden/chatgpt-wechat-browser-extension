@@ -1,5 +1,7 @@
 # ChatGPT For Wechat FileHelper
 
+> English | [中文文档](README.zh.md)
+
 A browser extension to turn wechat filehelper into a chatgpt-powered chatbot, supports Chrome/Edge/Firefox
 
 ![screenshot](https://user-images.githubusercontent.com/4012553/207370847-037177e5-2986-4562-9df5-b345d893704c.png)
@@ -17,7 +19,7 @@ A browser extension to turn wechat filehelper into a chatgpt-powered chatbot, su
 
 #### Install from Chrome Web Store (Preferred)
 
-<https://chrome.google.com/webstore/detail/chatgpt-wechatbot/ilmojomofhhilbkgmealhonmhfncebmg>
+<https://chrome.google.com/webstore/detail/chatgpt-for-wechat-filehe/ilmojomofhhilbkgmealhonmhfncebmg>
 
 #### Local Install
 
@@ -28,10 +30,6 @@ A browser extension to turn wechat filehelper into a chatgpt-powered chatbot, su
 5. Drag the unzipped folder anywhere on the page to import it (do not delete the folder afterwards).
 
 ### Install to Firefox
-
-#### Install from Mozilla Add-on Store (Preferred)
-
-<https://addons.mozilla.org/addon/chatgpt-for-google/>
 
 #### Local Install
 
