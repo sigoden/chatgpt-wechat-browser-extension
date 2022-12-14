@@ -18,9 +18,7 @@ async function getAccessToken() {
     .then((r) => r.json())
     .catch(() => ({}))
   if (!resp.accessToken) {
-    throw new Error(
-      '😟 UNAUTHORIZED.',
-    )
+    throw new Error('😟 UNAUTHORIZED.')
   }
   cache.set(KEY_ACCESS_TOKEN, resp.accessToken)
   return resp.accessToken

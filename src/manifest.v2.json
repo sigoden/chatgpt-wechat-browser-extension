@@ -1,7 +1,7 @@
 {
   "name": "ChatGPT For Wechat FileHelper",
   "description": "Turn wechat filehelper into a chatgpt-powered chatbot.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "manifest_version": 2,
   "icons": {
     "16": "logo.png",
@@ -9,11 +9,7 @@
     "48": "logo.png",
     "128": "logo.png"
   },
-  "permissions": [
-    "https://*.openai.com/",
-    "https://filehelper.weixin.qq.com/",
-    "https://szfilehelper.weixin.qq.com/"
-  ],
+  "permissions": ["https://*.openai.com/"],
   "background": {
     "scripts": ["background.js"]
   },

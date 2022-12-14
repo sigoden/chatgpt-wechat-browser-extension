@@ -4,13 +4,12 @@ A browser extension to turn wechat filehelper into a chatgpt-powered chatbot, su
 
 ![screenshot](https://user-images.githubusercontent.com/4012553/207370847-037177e5-2986-4562-9df5-b345d893704c.png)
 
-
 ## Usage
 
 1. Visit [Wechat FileHelper](https://szfilehelper.weixin.qq.com).
 2. Send chat messages via phones and site, and ChatGPT will automatically reply.
 
->  Recommand to use extension [ChatGPT Keep Alive[https://github.com/sigoden/chatgpt-keep-alive-browser-extension] to keep the session of [ChatGPT](https://chat.openai.com/chat) alive.
+> Recommand to use extension [ChatGPT Keep Alive[https://github.com/sigoden/chatgpt-keep-alive-browser-extension] to keep the session of [ChatGPT](https://chat.openai.com/chat) alive.
 
 ## Installation
 
