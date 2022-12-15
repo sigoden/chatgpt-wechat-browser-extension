@@ -7,21 +7,24 @@ const KEY_ACCESS_TOKEN = 'accessToken'
 
 const cache = new ExpiryMap(10 * 1000)
 
-let conversationId = undefined
-let parentMessageId = undefined
+let conversationId
+let parentMessageId
 
 async function getAccessToken() {
   if (cache.get(KEY_ACCESS_TOKEN)) {
     return cache.get(KEY_ACCESS_TOKEN)
   }
   const resp = await fetch('https://chat.openai.com/api/auth/session')
-    .then((r) => r.json())
-    .catch(() => ({}))
-  if (!resp.accessToken) {
-    throw new Error('😟 UNAUTHORIZED.')
+  if (!resp.ok) {
+    throw new Error(`😟 Network error(${resp.status}).`)
   }
-  cache.set(KEY_ACCESS_TOKEN, resp.accessToken)
-  return resp.accessToken
+  const data = await resp.json()
+  const accessToken = data?.accessToken
+  if (!accessToken) {
+    throw new Error('😟 Unauthorized.')
+  }
+  cache.set(KEY_ACCESS_TOKEN, accessToken)
+  return accessToken
 }
 
 async function generateAnswers(port, question) {
@@ -92,12 +95,12 @@ export async function fetchSSE(resource, options) {
   const { onMessage, ...fetchOptions } = options
   const resp = await fetch(resource, fetchOptions)
   if (!resp.ok) {
-    if (resp.status === 429) {
+    if (resp.status === 404) {
       conversationId = undefined
-      parentMessageId = undefined
+    } else if (resp.status === 429) {
       throw new Error(`😟 Too many requests, try again later.`)
     }
-    throw new Error(`😟 Network error.`)
+    throw new Error(`😟 Network error(${resp.status}).`)
   }
   const parser = createParser((event) => {
     if (event.type === 'event') {
