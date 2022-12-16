@@ -11,7 +11,11 @@ async function deleteOldDir() {
 async function runEsbuild() {
   let nodeEnv = process.env.NODE_ENV || 'production' // eslint-disable-line
   await esbuild.build({
-    entryPoints: ['src/content-script/index.mjs', 'src/background/index.mjs'],
+    entryPoints: [
+      'src/content-script/wechat.mjs',
+      'src/content-script/chatgpt.mjs',
+      'src/background/index.mjs',
+    ],
     bundle: true,
     outdir: outdir,
     treeShaking: true,
@@ -46,7 +50,8 @@ async function build() {
   await runEsbuild()
 
   const commonFiles = [
-    { src: 'build/content-script/index.js', dst: 'content-script.js' },
+    { src: 'build/content-script/wechat.js', dst: 'content-script-wechat.js' },
+    { src: 'build/content-script/chatgpt.js', dst: 'content-script-chatgpt.js' },
     { src: 'build/background/index.js', dst: 'background.js' },
     { src: 'src/logo.png', dst: 'logo.png' },
   ]

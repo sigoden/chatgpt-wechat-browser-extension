@@ -1,5 +1,5 @@
 {
-  "name": "chatgpt-for-wechat-filehelper",
+  "name": "chatgpt-wechat",
   "private": true,
   "scripts": {
     "build": "node build.mjs",

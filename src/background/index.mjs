@@ -7,8 +7,50 @@ const KEY_ACCESS_TOKEN = 'accessToken'
 
 const cache = new ExpiryMap(10 * 1000)
 
+let tabId
 let conversationId
 let parentMessageId
+let hasError = false
+let wechatPort
+let googleAuthFail = false
+
+Browser.runtime.onConnect.addListener((port) => {
+  wechatPort = port
+  wechatPort.onMessage.addListener(async (msg) => {
+    console.debug('question:', msg.question)
+    try {
+      await generateAnswers(msg.question)
+      hasError = false
+    } catch (err) {
+      console.log(err)
+      hasError = true
+      wechatPort.postMessage({ error: err.message })
+      cache.delete(KEY_ACCESS_TOKEN)
+    }
+  })
+})
+
+Browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.debug('recvieve message', message)
+
+  if (message.type === 'page') {
+    if (sender.tab?.id === tabId) {
+      if (googleAuthFail && !message.page.startsWith('https://chat.openai.com/chat')) {
+        sendResponse({ ok: false })
+      } else {
+        sendResponse({ ok: true })
+      }
+    } else {
+      sendResponse({ ok: false })
+    }
+  } else if (message.type === 'google-auth-fail') {
+    googleAuthFail = true
+    Browser.tabs.remove(tabId).catch(() => {})
+  } else if (message.type === 'enter-chat') {
+    googleAuthFail = false
+    if (wechatPort && hasError) wechatPort.postMessage({ answer: '🙂 Session established' })
+  }
+})
 
 async function getAccessToken() {
   if (cache.get(KEY_ACCESS_TOKEN)) {
@@ -16,22 +58,47 @@ async function getAccessToken() {
   }
   const resp = await fetch('https://chat.openai.com/api/auth/session')
   if (!resp.ok) {
+    if (resp.status === 401 || resp.status === 403) {
+      refreshLogin()
+      throw new Error(`😟 Session lost.`)
+    }
     throw new Error(`😟 Network error(${resp.status}).`)
   }
   const data = await resp.json()
-  const accessToken = data?.accessToken
-  if (!accessToken) {
-    throw new Error('😟 Unauthorized.')
+  if (!data?.accessToken || data?.error === 'RefreshAccessTokenError') {
+    refreshLogin()
+    throw new Error(`😟 Session lost.`)
   }
-  cache.set(KEY_ACCESS_TOKEN, accessToken)
-  return accessToken
+  cache.set(KEY_ACCESS_TOKEN, data.accessToken)
+  return data.accessToken
 }
 
-async function generateAnswers(port, question) {
+async function refreshLogin() {
+  if (tabId) {
+    try {
+      let tab = await Browser.tabs.get(tabId)
+      if (!tab?.url.startsWith('https://chat.openai.com/chat')) {
+        console.debug('tab was occupied')
+        tabId = null
+      }
+    } catch {
+      console.debug('tab was closed')
+      tabId = null
+    }
+  }
+  if (!tabId) {
+    const tab = await Browser.tabs.create({ url: 'https://chat.openai.com/chat', active: false })
+    tabId = tab.id
+  } else {
+    await Browser.tabs.reload(tabId)
+  }
+}
+
+async function generateAnswers(question) {
   const accessToken = await getAccessToken()
 
   const controller = new AbortController()
-  port.onDisconnect.addListener(() => {
+  wechatPort.onDisconnect.addListener(() => {
     controller.abort()
   })
 
@@ -66,9 +133,9 @@ async function generateAnswers(port, question) {
     },
     body: JSON.stringify(body),
     onMessage(message) {
-      console.debug('sse message', message)
       if (message === '[DONE]') {
-        port.postMessage({ answer: response })
+        console.debug('answer:', response)
+        wechatPort.postMessage({ answer: response })
         return
       }
       const data = JSON.parse(message)
@@ -127,16 +194,3 @@ export async function* streamAsyncIterable(stream) {
     reader.releaseLock()
   }
 }
-
-Browser.runtime.onConnect.addListener((port) => {
-  port.onMessage.addListener(async (msg) => {
-    console.debug('received msg', msg)
-    try {
-      await generateAnswers(port, msg.question)
-    } catch (err) {
-      console.log(err)
-      port.postMessage({ error: err.message })
-      cache.delete(KEY_ACCESS_TOKEN)
-    }
-  })
-})

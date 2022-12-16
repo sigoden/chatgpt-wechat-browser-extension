@@ -1,4 +1,4 @@
-# ChatGPT 微信文件助手机器人
+# ChatGPT 微信
 
 > [English](README.md) | 中文文档
 
@@ -10,8 +10,6 @@
 
 1. 访问【微信文件助手】(https://szfilehelper.weixin.qq.com)。
 2. 通过手机和网站发送聊天信息，ChatGPT 会自动回复。
-
-> 建议使用扩展 [ChatGPT Keep Alive](https://github.com/sigoden/chatgpt-keep-alive-browser-extension) 来保持 [ChatGPT](https://chat.openai.com/ 聊天）活着。
 
 ## 安装
 
